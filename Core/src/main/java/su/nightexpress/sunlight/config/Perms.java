@@ -17,6 +17,7 @@ public class Perms {
     public static final UniPermission BYPASS_TELEPORT_REQUESTS_DISABLED = new UniPermission(PREFIX_BYPASS + "teleport.requests.disabled");
     public static final UniPermission BYPASS_IGNORE_PM                  = new UniPermission(PREFIX_BYPASS + "ignore.pm");
     public static final UniPermission BYPASS_IGNORE_TELEPORTS           = new UniPermission(PREFIX_BYPASS + "ignore.teleports");
+    public static final UniPermission BYPASS_AFK_KICK                   = new UniPermission(PREFIX_BYPASS + "afk.kick");
 
 
     static {

@@ -7,6 +7,8 @@ import su.nightexpress.nightcore.util.Plugins;
 import su.nightexpress.nightcore.util.TimeUtil;
 import su.nightexpress.sunlight.Placeholders;
 import su.nightexpress.sunlight.SunLightPlugin;
+import su.nightexpress.sunlight.config.Perms;
+import su.nightexpress.sunlight.hook.impl.ToastedAFKHook;
 import su.nightexpress.sunlight.module.afk.config.AfkConfig;
 import su.nightexpress.sunlight.module.afk.config.AfkLang;
 import su.nightexpress.sunlight.module.afk.event.PlayerAfkEvent;
@@ -107,6 +109,11 @@ public class AfkState {
 
         this.idleTime++;
 
+        if (ToastedAFKHook.isInAfkRegion(this.player)) {
+            this.plugin.runTask(task -> this.enterAfk()); // Sync to the main thread.
+            return;
+        }
+
         if (this.canBeKicked()) {
             this.exitAfk();
             this.plugin.runTask(task -> this.module.kick(this.player)); // Sync to the main thread.
@@ -122,6 +129,11 @@ public class AfkState {
     }
 
     public void onActivity(int amount) {
+        if (ToastedAFKHook.isInAfkRegion(this.player)) {
+            this.plugin.runTask(task -> this.enterAfk()); // Sync to the main thread.
+            return;
+        }
+
         if (this.isAfk()) {
             if (System.currentTimeMillis() >= this.wakeUpTimeout && this.wakeUpTimeout != 0L) {
                 this.activityPoints = 0;
@@ -153,6 +165,8 @@ public class AfkState {
     }
 
     public boolean canBeKicked() {
+        if (this.player.hasPermission(Perms.BYPASS_AFK_KICK))
+            return false;
         int timeToKick = AfkModule.getTimeToKick(this.player);
         return timeToKick > 0 && this.idleTime >= timeToKick;
     }
